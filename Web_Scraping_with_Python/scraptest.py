@@ -8,38 +8,52 @@ from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 from bs4 import BeautifulSoup
 
-# handle exception when urlopen fails
-try:
-	html = urlopen("http://www.baidu.com/")
-	# html = urlopen("http://mengmajiang.com/")
-except URLError as e:
-	print(e)
+def getWebContent(url, tag):
 	'''
-    you can do something here as below:
-	1). break the function
-	2). return null
-	3). execute some other funcs 
+	handle exception when failing opening url
 	'''
-	# break
-	# return
-	# ...
-except HTTPError as e:
-	print(e)
-	# same as the last exception
+	try:
+		html = urlopen(url)
+	except (HTTPError, URLError) as e:
+		print("Http/Url error opending %s" %(url))
+		return None
+	'''
+	handle exception when extracting tag
+	'''
+	# note that text in html could only be get via read() one time
+	html_txt = html.read()
+	try: 
+		bsObj = BeautifulSoup(html_txt, "html.parser")
+		'''
+		note:
+		1). find("key"): 
+			returns the first element which is matched in beautiful soup object
+		2). find_all("key"):
+			returns all the elements matched in a list
+		'''
+		content = bsObj.find(tag)
+	except AttributeError as e:
+		print('%s is not found in %s' %(tag, url))
+		return None
+	return content
+
+
+'''
+test functions of getting expected tag from url
+'''
+url = "http://www.baidu.com"
+tag = "span"
+ctx = getWebContent(url, tag)
+if ctx != None:
+	print(ctx)
 else:
-	'''
-	continue the function in this section
-	'''
-	# print(html.read())
-	bsObj = BeautifulSoup(html.read(), features="html.parser")
+	print("fail to find %s in %s."%(tag, url))
 
 
-	# Print the first element which beautiful soup find
-	print(bsObj.head)
-	print(bsObj.span)
-	print(bsObj.script)
-
-	# Print the node of specified element
-	print(bsObj.head.script)
-	print(bsObj.body.div)
-
+url = "http://12mkasdawsc.com.cn"
+tag = "body"
+ctx = getWebContent(url, tag)
+if ctx != None:
+	print(ctx)
+else:
+	print("fail to find %s in %s."%(tag, url))
