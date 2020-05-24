@@ -47,13 +47,3 @@ def getCtx(url, tag, is_all):
 			return None
 	return ctx
 
-
-url = "http://www.baidu.com"
-tag = "a"
-print("test of getting the first tag in url content")
-result = getCtx(url, tag, False)
-print(result)
-print("test of getting all the tags in url content")
-result = getCtx(url, tag, True)
-for item in result:
-	print(item)
