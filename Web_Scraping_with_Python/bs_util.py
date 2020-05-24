@@ -22,28 +22,35 @@ function used to get the tag(s) contained in url content
 params:
 	
 '''
-def getUrlCtxTag(html_txt, tag, is_all):
+def getUrlCtxTag(html_txt, is_all, **pairs):
 	bsObj = bsoup(html_txt, "html.parser")
 	try:
 		if is_all == False:
-			content = bsObj.find(tag)
+			for tag, attr in pairs.items():
+				content = bsObj.find(tag, attr)
 		else:
-			content = bsObj.find_all(tag)
+			for tag, attr in pairs.items():
+				content = bsObj.find_all(tag, attr)
 	except AttributeError as e:
 		# print(e)
-		print ("%s couldn't be find in html_txt" %(tag))
+		print ("%s with atrribute %s couldn't be find in html_txt" %(tag, attr))
 		return None
 	return content
 
-def getCtx(url, tag, is_all):
+def getCtx(url, is_all, **pairs):
 	html_txt = getUrlCtx(url)
 	# print(html_txt)
 	if html_txt == None:
 		return None
-	else:
-		ctx = getUrlCtxTag(html_txt, tag, is_all)
-		if ctx == None:
-			print("failed to get url tag(s)")
-			return None
+	ctx = getUrlCtxTag(html_txt, is_all, **pairs)
+	if ctx == None:
+		print("failed to get url tag(s)")
+		return None
+	return ctx
+
+def getUrlLinks(url, is_all, **pairs):
+	ctx = getCtx(url, is_all, **pairs)
+	if ctx == None:
+		return None
 	return ctx
 
